@@ -10,8 +10,10 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
+// Fetch bookings.id as well
 $sql = "
 SELECT 
+    bookings.id,
     bookings.passenger_name,
     bookings.seat_number,
     bookings.booking_time,
@@ -101,7 +103,8 @@ $totalBookings = $result ? $result->num_rows : 0;
 
 <body>
 
-<div class="header text-center">
+<div class="header text-center position-relative">
+    <a href="admin.php" class="btn btn-outline-light position-absolute top-50 start-0 translate-middle-y ms-3">← Back to Admin</a>
     <h2><i class="bi bi-clipboard-data"></i> Admin Booking Dashboard</h2>
 </div>
 
@@ -149,9 +152,16 @@ $totalBookings = $result ? $result->num_rows : 0;
 
                 </div>
 
-                <small class="text-muted">
-                    Bus: <?= htmlspecialchars($row['bus_name']) ?>
-                </small>
+                <div class="d-flex justify-content-between align-items-end mt-3">
+                    <small class="text-muted">
+                        Bus: <?= htmlspecialchars($row['bus_name']) ?>
+                    </small>
+                    <a href="delete_booking.php?id=<?= $row['id'] ?>" 
+                       onclick="return confirm('Are you sure you want to cancel this booking?')"
+                       class="btn btn-sm btn-danger px-4">
+                       Cancel Booking
+                    </a>
+                </div>
 
             </div>
 
@@ -166,11 +176,6 @@ $totalBookings = $result ? $result->num_rows : 0;
     <?php endif; ?>
 
 </div>
-<a href="delete_booking.php?id=<?= $row['id'] ?>" 
-   onclick="return confirm('Cancel this booking?')"
-   class="btn btn-sm btn-danger mt-2">
-   Cancel
-</a>
 
 </body>
 </html>

@@ -1,13 +1,14 @@
 <?php
 include 'db.php';
 
-$booking_id = $_GET['id'];
+$booking_id = intval($_GET['id']); // Validate ID to prevent basic injection
 
 $sql = "DELETE FROM bookings WHERE id = $booking_id";
 
 if ($conn->query($sql) === TRUE) {
-    echo "Booking cancelled successfully";
-    echo "<br><a href='view_bookings.php'>Go Back</a>";
+    // Redirect cleanly
+    header("Location: view_booking.php");
+    exit();
 } else {
     echo "Error: " . $conn->error;
 }

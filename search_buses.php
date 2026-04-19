@@ -1,8 +1,9 @@
 <?php
+header('Content-Type: application/json');
 include 'db.php';
 
-$from = $_GET['from'] ?? '';
-$to   = $_GET['to'] ?? '';
+$from = isset($_GET['from']) ? $conn->real_escape_string(trim($_GET['from'])) : '';
+$to   = isset($_GET['to']) ? $conn->real_escape_string(trim($_GET['to'])) : '';
 
 $sql = "SELECT * FROM buses WHERE 1=1";
 

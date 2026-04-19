@@ -150,8 +150,7 @@ body {
                 </div>
 
                 <p>
-                    Seats Available: 
-                    <strong><?= (int)$row['available_seats'] ?></strong> / <?= (int)$row['seats'] ?>
+                    Total Seats: <strong><?= (int)$row['seats'] ?></strong>
                 </p>
 
                 <a href="book.php?bus_id=<?= (int)$row['id'] ?>" class="btn-book">
@@ -175,53 +174,60 @@ body {
 <script>
 function fetchBuses() {
 
-    let from = document.getElementById("from").value;
-    let to = document.getElementById("to").value;
+    let fromInput = document.getElementById("from").value.trim();
+    let toInput = document.getElementById("to").value.trim();
+
+    let from = encodeURIComponent(fromInput);
+    let to = encodeURIComponent(toInput);
 
     fetch(`search_buses.php?from=${from}&to=${to}`)
-        .then(res => res.json())
-        .then(data => {
+        .then(res => res.text())
+        .then(text => {
+            try {
+                let data = JSON.parse(text);
+                let container = document.getElementById("busResults");
+                container.innerHTML = "";
 
-            let container = document.getElementById("busResults");
-            container.innerHTML = "";
+                if (data.length === 0) {
+                    container.innerHTML = `
+                        <div class="col-12 text-center">
+                            <div class="alert alert-warning">
+                                No buses found matching that route.
+                            </div>
+                        </div>`;
+                    return;
+                }
 
-            if (data.length === 0) {
-                container.innerHTML = `
-                    <div class="col-12 text-center">
-                        <div class="alert alert-warning">
-                            No buses found
+                data.forEach(bus => {
+                    container.innerHTML += `
+                    <div class="col-md-4">
+                        <div class="bus-card">
+
+                            <h5>${bus.bus_name}</h5>
+
+                            <div class="route">
+                                <b>${bus.source}</b> ➝ <b>${bus.destination}</b>
+                            </div>
+
+                            <p>Total Seats: ${bus.seats}</p>
+
+                            <a href="book.php?bus_id=${bus.id}" class="btn-book">
+                                Book Now
+                            </a>
+
+                            <a href="delete_bus.php?id=${bus.id}" 
+                               onclick="return confirm('Delete this bus?')"
+                               class="btn-delete">
+                                Delete Bus
+                            </a>
+
                         </div>
                     </div>`;
-                return;
+                });
+            } catch (error) {
+                console.error("Invalid JSON response:", text);
+                alert("Sorry, an error occurred while searching for buses.");
             }
-
-            data.forEach(bus => {
-                container.innerHTML += `
-                <div class="col-md-4">
-                    <div class="bus-card">
-
-                        <h5>${bus.bus_name}</h5>
-
-                        <div class="route">
-                            <b>${bus.source}</b> ➝ <b>${bus.destination}</b>
-                        </div>
-
-                        <p>Seats: ${bus.seats}</p>
-
-                        <a href="book.php?bus_id=${bus.id}" class="btn-book">
-                            Book Now
-                        </a>
-
-                        <a href="delete_bus.php?id=${bus.id}" 
-                           onclick="return confirm('Delete this bus?')"
-                           class="btn-delete">
-                            Delete Bus
-                        </a>
-
-                    </div>
-                </div>`;
-            });
-
         });
 }
 </script>

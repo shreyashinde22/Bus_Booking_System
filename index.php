@@ -1,4 +1,5 @@
 <?php
+session_start();
 $host = "localhost";
 $user = "root";
 $pass = "";
@@ -107,9 +108,21 @@ body {
 <body>
 
 <!-- NAVBAR -->
-<div class="navbar p-3">
-    <a href="#">🚌 Bus Booking System</a>
-    <a href="admin.php">Admin Panel</a>
+<div class="navbar p-3 d-flex justify-content-between">
+    <a href="index.php" class="fs-4">🚌 Bus Booking System</a>
+    <div>
+        <?php if(isset($_SESSION['user_id'])): ?>
+            <span class="text-white me-3">Welcome, <b><?= htmlspecialchars($_SESSION['username']) ?></b></span>
+            <?php if($_SESSION['role'] === 'admin'): ?>
+                <a href="admin.php" class="btn btn-sm btn-outline-light me-2">Admin Panel</a>
+            <?php endif; ?>
+            <a href="logout.php" class="btn btn-sm btn-danger">Logout</a>
+        <?php else: ?>
+            <a href="login.php?role=admin" class="btn btn-sm btn-warning me-2 fw-bold text-dark">Admin Login</a>
+            <a href="login.php" class="btn btn-sm btn-success me-2">User Login</a>
+            <a href="register.php" class="btn btn-sm btn-primary">Register</a>
+        <?php endif; ?>
+    </div>
 </div>
 
 <!-- HERO -->
@@ -155,12 +168,6 @@ body {
 
                 <a href="book.php?bus_id=<?= (int)$row['id'] ?>" class="btn-book">
                     Book Now
-                </a>
-
-                <a href="delete_bus.php?id=<?= (int)$row['id'] ?>" 
-                   onclick="return confirm('Are you sure you want to delete this bus?')"
-                   class="btn-delete">
-                    Delete Bus
                 </a>
 
             </div>
@@ -213,12 +220,6 @@ function fetchBuses() {
 
                             <a href="book.php?bus_id=${bus.id}" class="btn-book">
                                 Book Now
-                            </a>
-
-                            <a href="delete_bus.php?id=${bus.id}" 
-                               onclick="return confirm('Delete this bus?')"
-                               class="btn-delete">
-                                Delete Bus
                             </a>
 
                         </div>

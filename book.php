@@ -1,4 +1,9 @@
 <?php 
+session_start();
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit();
+}
 include 'db.php';
 $bus_id = $_GET['bus_id'];
 

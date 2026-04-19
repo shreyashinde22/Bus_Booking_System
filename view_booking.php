@@ -1,14 +1,10 @@
 <?php
-$host = "localhost";
-$user = "root";
-$pass = "";
-$db   = "bus_booking";
-
-$conn = new mysqli($host, $user, $pass, $db);
-
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+session_start();
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+    header("Location: index.php");
+    exit();
 }
+include 'db.php';
 
 // Fetch bookings.id as well
 $sql = "
@@ -153,14 +149,17 @@ $totalBookings = $result ? $result->num_rows : 0;
                 </div>
 
                 <div class="d-flex justify-content-between align-items-end mt-3">
-                    <small class="text-muted">
+                    <small class="text-muted d-block pb-2">
                         Bus: <?= htmlspecialchars($row['bus_name']) ?>
                     </small>
-                    <a href="delete_booking.php?id=<?= $row['id'] ?>" 
-                       onclick="return confirm('Are you sure you want to cancel this booking?')"
-                       class="btn btn-sm btn-danger px-4">
-                       Cancel Booking
-                    </a>
+                    <div>
+                        <a href="edit_booking.php?id=<?= $row['id'] ?>" class="btn btn-sm btn-primary px-3 me-2">Edit</a>
+                        <a href="delete_booking.php?id=<?= $row['id'] ?>" 
+                           onclick="return confirm('Are you sure you want to cancel this booking?')"
+                           class="btn btn-sm btn-danger px-3">
+                           Cancel
+                        </a>
+                    </div>
                 </div>
 
             </div>
